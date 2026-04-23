@@ -52,4 +52,4 @@ stock_selection_system/data/
 Thumbs.db
 
 # Selection Results
-selection_results_*.csv
+selection_results.txt

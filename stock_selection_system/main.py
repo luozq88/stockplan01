@@ -142,7 +142,7 @@ def run_select_mode(logger, date=None):
             logger.info(f"   选股理由: {stock['selection_reason']}")
         logger.info("-" * 80)
         
-        export_file = f"selection_results_{date}.csv"
+        export_file = "selection_results.txt"
         if stock_selector.export_selection_results(date, export_file):
             logger.info(f"选股结果已导出到: {export_file}")
     else:

@@ -30,6 +30,9 @@ class StockSelector:
             
             self.logger.info(f"Starting realtime stock selection for {trade_date}")
             
+            # 清除当天已有的选股记录，只保留最新结果
+            self._clear_today_selections(trade_date)
+            
             stocks = self.db_manager.get_stock_list()
             if not stocks:
                 self.logger.warning("No stocks found in database")
@@ -299,14 +302,13 @@ class StockSelector:
                 self.logger.warning("No selection results to export")
                 return False
             
-            df = pd.DataFrame(results)
-            
             if output_file is None:
-                if trade_date is None:
-                    trade_date = datetime.now().strftime('%Y%m%d')
-                output_file = f"selection_results_{trade_date}.csv"
+                output_file = "selection_results.txt"
             
-            df.to_csv(output_file, index=False, encoding='utf-8-sig')
+            # 导出为txt格式，每行一个股票代码
+            with open(output_file, 'w', encoding='utf-8') as f:
+                for result in results:
+                    f.write(f"{result['ts_code']}\n")
             
             self.logger.info(f"Exported {len(results)} selection results to {output_file}")
             return True
@@ -314,6 +316,17 @@ class StockSelector:
         except Exception as e:
             self.logger.error(f"Error exporting selection results: {e}")
             return False
+    
+    def _clear_today_selections(self, trade_date: str):
+        """清除当天的选股记录"""
+        try:
+            with self.db_manager.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('DELETE FROM stock_selection WHERE trade_date = ?', (trade_date,))
+                conn.commit()
+                self.logger.info(f"Cleared previous selections for {trade_date}")
+        except Exception as e:
+            self.logger.error(f"Error clearing selections for {trade_date}: {e}")
     
     def get_top_selections(self, limit: int = 10, trade_date: str = None) -> List[Dict]:
         try:

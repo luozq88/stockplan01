@@ -40,12 +40,12 @@ class TencentClient:
     
     def _parse_quote_data(self, data_str: str, tencent_code: str) -> Optional[Dict]:
         try:
-            match = re.search(r'v_"([^"]+)"="([^"]*)"', data_str)
+            pattern = f'v_{tencent_code}="([^"]*)"'
+            match = re.search(pattern, data_str)
             if not match:
                 return None
-            
-            code = match.group(1)
-            values = match.group(2).split('~')
+
+            values = match.group(1).split('~')
             
             if len(values) < 45:
                 return None
