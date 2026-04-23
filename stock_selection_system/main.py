@@ -126,7 +126,7 @@ def run_select_mode(logger, date=None):
         date = datetime.now().strftime('%Y%m%d')
     
     logger.info(f"选股日期: {date}")
-    logger.info("执行午盘选股策略...")
+    logger.info("执行盘中选股策略...")
     
     selected_stocks = stock_selector.select_stocks_noon(date)
     
